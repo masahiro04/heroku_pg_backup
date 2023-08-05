@@ -1,11 +1,9 @@
+use reqwest::blocking::get;
+use std::fs::File;
+use std::io::copy;
 use std::io::Error;
 use std::process::Command;
 use std::{env, panic};
-
-use std::fs::File;
-use std::io::copy;
-
-use reqwest::blocking::get;
 
 fn fetch_latest_s3_backup_url(app_name: &str) -> Result<String, Error> {
     let output = match Command::new("heroku")
