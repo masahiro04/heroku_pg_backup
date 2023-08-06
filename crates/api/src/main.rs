@@ -7,6 +7,8 @@ use std::{
     str::FromStr,
 };
 
+use dotenv::dotenv;
+
 #[derive(Clone, Debug)]
 pub struct AppState {
     pub heroku_app_name: String,
@@ -21,6 +23,7 @@ fn router(shared_state: AppState) -> Router {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    dotenv()?;
     let heroku_api_key = env::var("HEROKU_API_KEY").context("HEROKU_API_KEY not found")?;
     env::set_var("HEROKU_API_KEY", &heroku_api_key);
     let heroku_app_name = env::var("HEROKU_APP_NAME").context("HEROKU_APP_NAME not found")?;
