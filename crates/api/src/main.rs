@@ -1,13 +1,12 @@
 mod handler;
 use anyhow::Context;
 use axum::Router;
+use dotenv::dotenv;
 use std::{
     env,
     net::{IpAddr, SocketAddr},
     str::FromStr,
 };
-
-use dotenv::dotenv;
 
 #[derive(Clone, Debug)]
 pub struct AppState {
@@ -32,7 +31,6 @@ async fn main() -> anyhow::Result<()> {
         heroku_app_name,
     };
     let app = router(shared_state);
-
     let port_as_string = env::var("PORT").or_else(|e| match e {
         env::VarError::NotPresent => Ok("3000".to_owned()),
         env::VarError::NotUnicode(_) => anyhow::bail!("PORT is not unicode"),
@@ -42,7 +40,6 @@ async fn main() -> anyhow::Result<()> {
         IpAddr::from_str("0.0.0.0").expect("0.0.0.0 is valid host"),
         port,
     );
-
     Ok(axum::Server::bind(&socket_addr)
         .serve(app.into_make_service())
         .await?)

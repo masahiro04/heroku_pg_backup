@@ -1,5 +1,4 @@
 use crate::AppState;
-
 use axum::extract::State;
 use axum::{routing, Router};
 use hyper::StatusCode;
@@ -33,14 +32,11 @@ async fn handler(
         heroku_app_name, ..
     }): State<AppState>,
 ) -> Result<(), StatusCode> {
-    let download_url = fetch_latest_s3_backup_url(&heroku_app_name).or_else(|e| match e {
-        anyhow::Error { .. } => Err(StatusCode::INTERNAL_SERVER_ERROR),
-    })?;
+    let download_url = fetch_latest_s3_backup_url(&heroku_app_name)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     download_backup_file(&download_url)
         .await
-        .or_else(|e| match e {
-            anyhow::Error { .. } => Err(StatusCode::INTERNAL_SERVER_ERROR),
-        })
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
 pub fn route() -> Router<AppState> {
